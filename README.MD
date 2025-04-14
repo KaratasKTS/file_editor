@@ -17,9 +17,6 @@ and convert image types"
   - Simple interface for quick batch operations
     (complex file formats that including xml are not supported)
 
-- WARNING
-    YOUR EXPORT DIRECTORY SHOULD BE SET TO 
-    A DIFFERENT FOLDER THAN THE INPUT FILE FOR THE PROGRAM TO WORK PROPERLY!
 ## Prerequisites
 
 - C++17 compatible compiler
