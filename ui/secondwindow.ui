@@ -115,7 +115,12 @@
        <widget class="QWidget" name="page_2">
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
-          <widget class="QComboBox" name="comboBox"/>
+          <widget class="QComboBox" name="comboBox">
+           <property name="styleSheet">
+            <string notr="true">padding : 5px;
+</string>
+           </property>
+          </widget>
          </item>
          <item>
           <spacer name="horizontalSpacer">
@@ -168,6 +173,27 @@
    <item>
     <widget class="QWidget" name="widget_4" native="true">
      <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QPushButton" name="addfiles">
+        <property name="minimumSize">
+         <size>
+          <width>140</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Poppins Medium</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Add Files</string>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::DocumentPageSetup"/>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QPushButton" name="exportfolder">
         <property name="minimumSize">
@@ -228,27 +254,6 @@
         </property>
         <property name="icon">
          <iconset theme="QIcon::ThemeIcon::EditDelete"/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="addfiles">
-        <property name="minimumSize">
-         <size>
-          <width>140</width>
-          <height>40</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>Poppins Medium</family>
-         </font>
-        </property>
-        <property name="text">
-         <string>Add Files</string>
-        </property>
-        <property name="icon">
-         <iconset theme="QIcon::ThemeIcon::DocumentPageSetup"/>
         </property>
        </widget>
       </item>

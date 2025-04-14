@@ -1,7 +1,6 @@
 #include "../hpp/secondwindow.h"
 #include <QFileDialog>
 #include "ui/ui_secondwindow.h"
-#include "ui_secondwindow.h"
 #include <QStringList>
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -51,7 +50,7 @@ std::string SecondWindow::getFileName( const std::string& url )
 
 // checks both file inputs and word inputs for the text editor if
 // invalid prompts the user to add valid data and removes the unsupported types
-int SecondWindow::inputValidation( const std::array<std::string, 2> &inputs )
+int SecondWindow::textInputValidation( const std::array<std::string, 2> &inputs )
 {
 
         if( inputs.at(0) == "" || inputs.at(1) == "" )
@@ -116,7 +115,7 @@ int SecondWindow::inputValidation( const std::array<std::string, 2> &inputs )
             }
         }
 
-        if ( !file_validator() )
+        if ( !img_file_validator() )
         {
 
             return 0;
@@ -132,7 +131,6 @@ int SecondWindow::inputValidation( const std::array<std::string, 2> &inputs )
 void SecondWindow::text_converter( const std::string& str, const std::array<std::string, 2>& searchValues )
 
 {
-        auto start = std::chrono::high_resolution_clock::now();
 
         std::ifstream file ( str );
 
@@ -172,21 +170,6 @@ void SecondWindow::text_converter( const std::string& str, const std::array<std:
 
         }
 
-    auto end = std::chrono::high_resolution_clock::now();
-
-    std::chrono::duration<double> duration = end - start ;
-
-    std::stringstream ss;
-
-    ss<<duration.count();
-
-    std::string successMessage = "Your files have been edited - " + std::string("Exec time: ")+ss.str();
-
-    this ->statusBar->showMessage(successMessage.c_str(), 5000);
-
-
-
-
 }
 
 
@@ -207,6 +190,7 @@ void SecondWindow::text_editor()
 
                 });
 
+    this ->statusBar->showMessage("Your files have been edited" , 5000);
 }
 
 
@@ -230,30 +214,32 @@ void SecondWindow::file_editor()
 
     this -> get_inputs();
 
-        if ( inputValidation(file_editor_variables.find_replace ) )
-        {
-
-            if( !file_validator() )
-
-                return;
-
             if ( !m_programMode )
             {
 
-              this->text_editor();
+                if ( textInputValidation(file_editor_variables.find_replace))
+                {
+
+                    this->text_editor();
+
+                }
+
 
             }
             else
             {
 
-               this->img_editor();
+                if (img_file_validator())
+
+                {
+                    this->img_editor();
+                }
 
             }
 
 
-        }
-
 }
+
 
 
 
@@ -290,7 +276,6 @@ SecondWindow::~SecondWindow()
 }
 
 
-
 void SecondWindow::cleanUpSelections()
 {
 
@@ -301,6 +286,7 @@ void SecondWindow::cleanUpSelections()
     ui->listWidget->clear();
 
 }
+
 
 // gets user input, passes the file addresses to the ui
 // and stores them to the user input variables in second
@@ -331,9 +317,11 @@ void SecondWindow::add_file()
     }
 }
 
+
 //parallel execution of image convertion function
 void SecondWindow::img_editor()
 {
+
     std::for_each(std::execution::par, file_editor_variables.user_input_vec.begin(),
 
         file_editor_variables.user_input_vec.end(), [this](const auto& img){
@@ -342,22 +330,23 @@ void SecondWindow::img_editor()
 
     });
 
+    this -> statusBar->showMessage("Your images have been converted", 5000);
 }
 
-//here i am using opencv for converting file formats (i didnt realize qt had that build it)
-//but for the pdf painting i am using the qt pdfwriter
+
+//here i am using opencv for converting file formats
 void SecondWindow::img_converter( const std::string& inputImgy )
 {
-    auto start = std::chrono::high_resolution_clock::now();
 
     cv::Mat input = cv::imread( inputImgy );
 
     if ( input.empty() )
     {
-        this->statusBar->showMessage("cant read image", 5000);
+        this->statusBar->showMessage("Cant read image", 5000);
 
         return;
     }
+
 
     std::filesystem::path inputpath( inputImgy );
 
@@ -367,44 +356,8 @@ void SecondWindow::img_converter( const std::string& inputImgy )
 
     const std::string outfile = file_editor_variables.export_location+ "/" + new_out_name.filename().u8string();
 
-    if(extention != "pdf"){
 
     cv::imwrite( outfile, input );
-
-    }
-    else
-    {
-        QImage image( QString::fromStdString ( inputImgy ) );
-
-        if (image.isNull()) {
-
-            qWarning() << "Failed to load image:" << QString::fromStdString( inputImgy );
-
-            return;
-        }
-
-        QPdfWriter pdfwriter(QString::fromStdString( outfile ));
-
-        QPainter painter( &pdfwriter );
-
-        painter.drawImage(0, 0, image);
-
-        painter.end();
-
-    }
-
-    auto end = std::chrono::high_resolution_clock::now();
-
-    std::chrono::duration<double> duration = end - start ;
-
-    std::stringstream ss;
-
-    ss<<duration.count();
-
-    std::string successMessage = "Your files have been edited - " + std::string("Exec time: ")+ss.str();
-
-    this ->statusBar->showMessage(successMessage.c_str(), 5000);
-
 
 }
 
@@ -417,13 +370,11 @@ void SecondWindow::set_extentions()
 
     ui->comboBox->addItem("png","png");
 
-    ui->comboBox->addItem("pdf","pdf");
-
     ui->comboBox->addItem("bmp","bmp");
 
     ui->comboBox->addItem("tiff","tiff");
 
-    Extensions = {".jpg",".webp", ".png" , ".pdf", ".bmp", ".tiff",".exe",".dll", ".lib"};
+    Extensions = {".jpg",".webp", ".png" , ".bmp", ".tiff",".exe",".dll", ".lib"};
 
 }
 
@@ -441,8 +392,24 @@ void SecondWindow::clean_up_variables()
 }
 
 
-int  SecondWindow::file_validator()
+int  SecondWindow::img_file_validator()
 {
+    if (this -> file_editor_variables.user_input_vec.empty() )
+    {
+        this->statusBar->showMessage("No images selected" , 5000) ;
+
+        return 0;
+
+ }
+
+    if (this -> file_editor_variables.export_location ==  "" )
+    {
+         this->statusBar->showMessage("Please set export location" , 5000) ;
+
+        return 0;
+    }
+
+
     for(auto it = file_editor_variables.user_input_vec.begin(); it != file_editor_variables.user_input_vec.end(); )
     {
         std::filesystem::path path(*it);
@@ -475,6 +442,14 @@ int  SecondWindow::file_validator()
             this->statusBar->showMessage("File Cleaned, try again", 5000);
 
             this->add_refreshList();
+
+            return 0;
+
+            }
+            if(file_editor_variables.user_input_vec.at(0) == "")
+            {
+
+            this->statusBar->showMessage("No images selected", 5000);
 
             return 0;
 
@@ -555,17 +530,7 @@ void SecondWindow::on_exportfolder_clicked()
 void SecondWindow::on_convert_clicked()
 {
 
-    if ( this->m_programMode ){
-
-    img_editor();
-
-    }
-    else
-    {
-
     file_editor();
-
-    }
 }
 
 

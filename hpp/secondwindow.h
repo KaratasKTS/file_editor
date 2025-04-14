@@ -23,14 +23,6 @@ struct user_inputs_file_editor {
 
 };
 
-enum extention_flags{
-
-    jpeg,
-    png,
-    webp,
-
-};
-
 namespace Ui {
 
 class SecondWindow;
@@ -60,9 +52,9 @@ public:
 
     void setStackedWidget(const bool& mode);
 
-    int file_validator();
+    int img_file_validator();
 
-    int inputValidation(const std::array<std::string,2>& inputs) ;
+    int textInputValidation(const std::array<std::string,2>& inputs) ;
 
     ~SecondWindow();
 

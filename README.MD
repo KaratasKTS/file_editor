@@ -9,13 +9,13 @@ and convert image types"
 ## Features
 
 - **Image Format Conversion**
-  - Convert images between various formats (JPEG, PNG, BMP, WebP, PDF, TIFF,etc.)
+  - Convert images between various formats (JPEG, PNG, BMP, WebP, TIFF)
   - Optimized for bulk conversion to WebP for web development workflows
 
 - **HTML File Editor**
   - Find and replace text patterns in HTML files (e.g., update image extensions)
   - Simple interface for quick batch operations
-    (complex file formats that include xml are not supported)
+    (complex file formats that including xml are not supported)
 
 - WARNING
     YOUR EXPORT DIRECTORY SHOULD BE SET TO 
